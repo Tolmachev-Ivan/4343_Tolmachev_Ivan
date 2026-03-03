@@ -72,6 +72,13 @@ void backtrack(int used)
     {
         best = used;
         ans = cur;
+
+        cout << "\n====== Предварительный лучший результат ======\n";
+        cout << "Количесвто квадратов: " << best << endl;
+        cout << "x y размер\n";
+        for (auto [xc, yc, sizec] : ans)
+            cout << xc << " " << yc << "   " << sizec << "\n";
+
         return;
     }
 
@@ -105,7 +112,17 @@ void backtrack(int used)
         place(x, y, size);
         cur.emplace_back(x + 1, y + 1, size);
 
+        cout << "\nРазмещение квадрата\n";
+        cout << "x = " << x;
+        cout << "; y = " << y;
+        cout << "; размер = " << size << endl;
+
         backtrack(used + 1);
+
+        cout << "\nУдаление квадрата\n";
+        cout << "x = " << x;
+        cout << "; y = " << y;
+        cout << "; размер = " << size << endl;
 
         cur.pop_back();
         remove_sq(x, y, size);
@@ -121,7 +138,7 @@ int main()
     total_cells = N * N;
     best = N * 2;
 
-    for (int i = 0; i < 40; ++i)
+    for (int i = 0; i < 40; i++)
         board_mask[i] = 0;
 
     if (N % 2 == 0)
@@ -165,17 +182,17 @@ int main()
         return 0; 
     }
 
-    int s1 = N / 2 + 1;
-    int s2 = N / 2;
+   int s1 = N / 2 + 1;
+   int s2 = N / 2;
 
-    place(0, 0, s1);
-    cur.emplace_back(1, 1, s1);
+   place(0, 0, s1);
+   cur.emplace_back(1, 1, s1);
 
-    place(0, s1, s2);
-    cur.emplace_back(1, s1 + 1, s2);
+   place(0, s1, s2);
+   cur.emplace_back(1, s1 + 1, s2);
 
-    place(s1, 0, s2);
-    cur.emplace_back(s1 + 1, 1, s2);
+   place(s1, 0, s2);
+   cur.emplace_back(s1 + 1, 1, s2);
 
     backtrack(3);
 

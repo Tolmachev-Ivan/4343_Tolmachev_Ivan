@@ -23,4 +23,4 @@ do_test: test
 	./test
 
 clean:
-	rm -f main research test *.csv
+	rm -f main research test *.csv *.png

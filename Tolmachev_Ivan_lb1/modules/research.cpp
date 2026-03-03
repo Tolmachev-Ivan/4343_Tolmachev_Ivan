@@ -1,9 +1,11 @@
+// square_partition_split.cpp
 #include <iostream>
 #include <vector>
 #include <tuple>
 #include <algorithm>
 #include <unordered_set>
 #include <fstream>
+#include <cmath>
 
 using namespace std;
 
@@ -16,15 +18,21 @@ vector<tuple<int,int,int>> cur, ans;
 int total_cells;
 int filled_cells = 0;
 
+unsigned long long op_count = 0ULL;
+
 bool find_empty(int &x, int &y)
 {
     for (x = 0; x < N; x++)
     {
+        op_count++;
         if (board_mask[x] != ((1ULL << N) - 1))
         {
             for (y = 0; y < N; y++)
+            {
+                op_count++;
                 if (!(board_mask[x] & (1ULL << y)))
                     return true;
+            }
         }
     }
     return false;
@@ -37,35 +45,45 @@ int count_filled()
 
 bool can_place(int x, int y, int size)
 {
+    op_count++;
     if (x + size > N || y + size > N) return false;
 
     unsigned long long mask = ((1ULL << size) - 1) << y;
 
-    for (int i = x; i < x + size; i++)
+    for (int i = x; i < x + size; i++) {
+        op_count++;
         if (board_mask[i] & mask)
             return false;
+    }
 
     return true;
 }
 
 void place(int x, int y, int size)
 {
+    op_count++;
     unsigned long long mask = ((1ULL << size) - 1) << y;
-    for (int i = x; i < x + size; i++)
+    for (int i = x; i < x + size; i++) {
+        op_count++;
         board_mask[i] |= mask;
+    }
     filled_cells += size * size;
 }
 
 void remove_sq(int x, int y, int size)
 {
+    op_count++;
     unsigned long long mask = ((1ULL << size) - 1) << y;
-    for (int i = x; i < x + size; i++)
+    for (int i = x; i < x + size; i++) {
+        op_count++;
         board_mask[i] &= ~mask;
+    }
     filled_cells -= size * size;
 }
 
 void backtrack(int used)
 {
+    op_count++;
     if (used >= best) return;
 
     int filled = count_filled();
@@ -100,6 +118,7 @@ void backtrack(int used)
 
     for (int size = max_s; size >= 1; size--)
     {
+        op_count++;
         if (!can_place(x, y, size)) continue;
         if (tried_sizes.find(size) != tried_sizes.end()) continue;
 
@@ -123,13 +142,27 @@ int solve_for_n(int n)
     filled_cells = 0;
     cur.clear();
     ans.clear();
-    
+
+    op_count = 0ULL;
+
     for (int i = 0; i < 40; ++i)
         board_mask[i] = 0;
 
-    if (N % 2 == 0) return 4;
-    if (N % 3 == 0) return 6;
-    if (N % 5 == 0) return 8;
+    if (N % 2 == 0)
+    {
+        op_count += 1;
+        return 4;
+    }
+    if (N % 3 == 0)
+    {
+        op_count += 1;
+        return 6;
+    }
+    if (N % 5 == 0)
+    {
+        op_count += 1;
+        return 8;
+    }
 
     int s1 = N / 2 + 1;
     int s2 = N / 2;
@@ -144,23 +177,38 @@ int solve_for_n(int n)
     cur.emplace_back(s1 + 1, 1, s2);
 
     backtrack(3);
-    
+
     return best;
+}
+
+bool is_prime(int x) {
+    if (x <= 5) return false;
+    if (x % 2 == 0) return false;
+    int r = (int)std::sqrt(x);
+    for (int i = 3; i <= r; i += 2)
+        if (x % i == 0) return false;
+    return true;
 }
 
 int main()
 {
-    ofstream csv_file("square_partition_research.csv");
-    
-    csv_file << "N;min_squares\n";
-    
+    ofstream csv_pr("square_partition_primes.csv");
+    ofstream csv_non("square_partition_nonprimes.csv");
+
+    csv_pr << "N;min_squares;operations\n";
+    csv_non << "N;min_squares;operations\n";
+
     for (int n = 2; n <= 40; n++)
     {
         int min_squares = solve_for_n(n);
-        csv_file << n << ";" << min_squares << "\n";
+        if (is_prime(n))
+            csv_pr << n << ";" << min_squares << ";" << op_count << "\n";
+        else
+            csv_non << n << ";" << min_squares << ";" << op_count << "\n";
     }
-    
-    csv_file.close();
-    
+
+    csv_pr.close();
+    csv_non.close();
+
     return 0;
 }
