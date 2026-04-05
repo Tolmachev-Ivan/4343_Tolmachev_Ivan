@@ -196,6 +196,7 @@ int main()
 
     backtrack(3);
 
+    cout << "\n===== Ответ ======\n"; 
     cout << best << "\n";
     for (auto [x, y, size] : ans)
         cout << x << " " << y << " " << size << "\n";
