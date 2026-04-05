@@ -15,11 +15,11 @@ const double EPS = 1e-9;
 double best_cost = INF;
 vector<int> best_path;
 
-static string indent(int depth) {
+string indent(int depth) {
     return string(depth * 2, ' ');
 }
 
-static void printMatrix(const vector<vector<double>>& mat,
+void printMatrix(const vector<vector<double>>& mat,
                         const vector<int>& rows,
                         const vector<int>& cols,
                         int depth,
@@ -47,7 +47,7 @@ static void printMatrix(const vector<vector<double>>& mat,
     cout << '\n';
 }
 
-static void printInitialMatrix(const vector<vector<double>>& w) {
+void printInitialMatrix(const vector<vector<double>>& w) {
     int n = (int)w.size();
     cout << "Исходная матрица весов:\n";
     cout << "      ";
@@ -72,7 +72,7 @@ static void printInitialMatrix(const vector<vector<double>>& w) {
     cout << '\n';
 }
 
-static void printCurrentArcs(const vector<int>& next_arc, int n, int depth) {
+void printCurrentArcs(const vector<int>& next_arc, int n, int depth) {
     cout << indent(depth) << "Текущие включённые дуги: ";
     bool any = false;
     for (int i = 0; i < n; ++i) {
@@ -99,7 +99,6 @@ double reduceMatrix(vector<vector<double>>& mat,
         cout << indent(depth) << stage << '\n';
     }
 
-    // Reduction by rows
     for (int i = 0; i < n; ++i) {
         double min_val = INF;
         for (int j = 0; j < m; ++j) {
@@ -113,7 +112,6 @@ double reduceMatrix(vector<vector<double>>& mat,
         }
     }
 
-    // Reduction by columns
     for (int j = 0; j < m; ++j) {
         double min_val = INF;
         for (int i = 0; i < n; ++i) {
@@ -263,7 +261,6 @@ void branchAndBound(vector<vector<double>> mat,
     cout << '\n';
     cout << indent(depth) << "Соответствующая дуга: " << u << "->" << v << '\n';
 
-    // Right branch: forbid edge u->v
     if (!force_left) {
         cout << indent(depth) << "Правая ветвь: запрещаем дугу " << u << "->" << v << '\n';
         vector<vector<double>> mat_right = mat;
@@ -284,7 +281,6 @@ void branchAndBound(vector<vector<double>> mat,
         cout << indent(depth) << "Правая ветвь не рассматривается: ноль с бесконечным штрафом.\n";
     }
 
-    // Left branch: include edge u->v
     if (next_arc[u] != -1 || prev_arc[v] != -1) {
         cout << indent(depth) << "Левая ветвь невозможна: конфликт по входящей/исходящей дуге.\n\n";
         return;
@@ -348,7 +344,7 @@ void branchAndBound(vector<vector<double>> mat,
     prev_arc[v] = -1;
 }
 
-static istream* chooseInputStream(int argc, char* argv[], ifstream& fin) {
+istream* chooseInputStream(int argc, char* argv[], ifstream& fin) {
     if (argc > 1) {
         fin.open(argv[1]);
         if (fin) return &fin;

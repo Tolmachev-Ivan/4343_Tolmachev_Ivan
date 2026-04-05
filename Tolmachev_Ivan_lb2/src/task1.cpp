@@ -13,7 +13,7 @@ using namespace std;
 const double INF = 1e100;
 const double EPS = 1e-12;
 
-static istream* chooseInputStream(int argc, char* argv[], ifstream& fin) {
+istream* chooseInputStream(int argc, char* argv[], ifstream& fin) {
     if (argc > 1) {
         fin.open(argv[1]);
         if (fin) return &fin;
@@ -24,7 +24,7 @@ static istream* chooseInputStream(int argc, char* argv[], ifstream& fin) {
     return &cin;
 }
 
-static void printMatrix(const vector<vector<double>>& w) {
+void printMatrix(const vector<vector<double>>& w) {
     int n = (int)w.size();
     cout << "Матрица весов:\n";
     cout << fixed << setprecision(2);
@@ -40,7 +40,7 @@ static void printMatrix(const vector<vector<double>>& w) {
     cout << '\n';
 }
 
-static void printVectorInt(const vector<int>& vec, const string& title) {
+void printVectorInt(const vector<int>& vec, const string& title) {
     cout << title;
     for (size_t i = 0; i < vec.size(); ++i) {
         if (i) cout << ' ';
@@ -49,7 +49,7 @@ static void printVectorInt(const vector<int>& vec, const string& title) {
     cout << '\n';
 }
 
-static void printStepMinEdges(const vector<double>& min_edge, const vector<bool>& used) {
+void printStepMinEdges(const vector<double>& min_edge, const vector<bool>& used) {
     cout << "  Текущие минимальные рёбра до непосещённых вершин:\n";
     cout << fixed << setprecision(2);
     cout << "  ";
@@ -63,7 +63,7 @@ static void printStepMinEdges(const vector<double>& min_edge, const vector<bool>
     cout << '\n';
 }
 
-static void printTreeEdges(const vector<vector<pair<int, double>>>& tree) {
+void printTreeEdges(const vector<vector<pair<int, double>>>& tree) {
     cout << "Рёбра минимального остовного дерева:\n";
     cout << fixed << setprecision(2);
     for (size_t v = 0; v < tree.size(); ++v) {
