@@ -7,22 +7,28 @@ using namespace std;
 
 int main() {
     int base_replace, base_insert, base_delete;
+    cout << "Стоимости операций (R, I, D): ";
     cin >> base_replace >> base_insert >> base_delete;
 
     pair<char, int> special_replace;
     char special_char;
     int cost;
+    cout << "Особый символ и его замена: ";
     cin >> special_char >> cost;
     special_replace = {special_char, cost};
 
     pair<char, int> special_insert;
+    cout << "Особый символ и его вставка: ";
     cin >> special_char >> cost;
     special_insert = {special_char, cost};
 
     string A, B;
-    cin >> A >> B;
+    cout << "Строка A: ";
+    cin >> A;
+    cout << "Строка B: ";
+    cin >> B;
 
-    cout << "============= ВВЕДЁННЫЕ ДАННЫЕ ==============\n";
+    cout << "\n============= ВВЕДЁННЫЕ ДАННЫЕ ==============\n";
     cout << "Базовые стоимости: замена = " << base_replace
          << ", вставка = " << base_insert
          << ", удаление = " << base_delete << "\n\n";
@@ -48,28 +54,59 @@ int main() {
     }
     for (int j = 1; j <= m; ++j) {
         char c = B[j - 1];
-        int ins_cost = special_insert.first == c ? special_insert.second : base_insert;
+        int ins_cost = (special_insert.first == c) ? special_insert.second : base_insert;
         dp[0][j] = dp[0][j - 1] + ins_cost;
     }
 
+    cout << "========== ЗАПОЛНЕНИЕ ТАБЛИЦЫ DP ==========\n";
+    cout << "Пустая строка и столбец уже инициализированы.\n\n";
+
     for (int i = 1; i <= n; ++i) {
         for (int j = 1; j <= m; ++j) {
-            if (A[i - 1] == B[j - 1]) {
-                dp[i][j] = dp[i - 1][j - 1];
-            } else {
-                char a_char = A[i - 1];
-                char b_char = B[j - 1];
+            char a_char = A[i - 1];
+            char b_char = B[j - 1];
 
-                int rep_cost = special_replace.first == a_char ? special_replace.second : base_replace;
-                int ins_cost = special_insert.second == b_char ? special_insert.second : base_insert;
+            cout << "--- Ячейка i=" << i << " ('" << a_char << "'), j=" << j << " ('" << b_char << "') ---\n";
+
+            if (a_char == b_char) {
+                int val = dp[i - 1][j - 1];
+                dp[i][j] = val;
+                cout << "  Символы совпадают: '" << a_char << "' == '" << b_char << "'\n";
+                cout << "  dp[" << i << "][" << j << "] = dp[" << i-1 << "][" << j-1 << "] = " << val << "\n";
+            } else {
+                int rep_cost = (special_replace.first == a_char) ? special_replace.second : base_replace;
+                int ins_cost = (special_insert.first == b_char) ? special_insert.second : base_insert;
                 int del_cost = base_delete;
 
                 int replace = dp[i - 1][j - 1] + rep_cost;
                 int insert  = dp[i][j - 1] + ins_cost;
                 int del     = dp[i - 1][j] + del_cost;
 
-                dp[i][j] = min({replace, insert, del});
+                cout << "  Символы разные. Варианты:\n";
+                cout << "    1) Замена '" << a_char << "' -> '" << b_char << "': "
+                     << "rep_cost = " << rep_cost
+                     << " (особый: " << (special_replace.first == a_char ? "да" : "нет") << ")"
+                     << ", replace = dp[" << i-1 << "][" << j-1 << "] + " << rep_cost
+                     << " = " << dp[i-1][j-1] << " + " << rep_cost << " = " << replace << "\n";
+                cout << "    2) Вставка '" << b_char << "': "
+                     << "ins_cost = " << ins_cost
+                     << " (особый: " << (special_insert.first == b_char ? "да" : "нет") << ")"
+                     << ", insert = dp[" << i << "][" << j-1 << "] + " << ins_cost
+                     << " = " << dp[i][j-1] << " + " << ins_cost << " = " << insert << "\n";
+                cout << "    3) Удаление '" << a_char << "': "
+                     << "del_cost = " << del_cost
+                     << ", del = dp[" << i-1 << "][" << j << "] + " << del_cost
+                     << " = " << dp[i-1][j] << " + " << del_cost << " = " << del << "\n";
+
+                int minimum = min({replace, insert, del});
+                dp[i][j] = minimum;
+                cout << "  -> минимум = " << minimum << " (";
+                if (minimum == replace) cout << "замена";
+                else if (minimum == insert) cout << "вставка";
+                else cout << "удаление";
+                cout << ")\n";
             }
+            cout << "  Текущее dp[" << i << "][" << j << "] = " << dp[i][j] << "\n\n";
         }
     }
 
@@ -128,7 +165,6 @@ int main() {
                 ops.push_back('D');
                 --i;
             } else {
-                // fallback
                 if (i > 0 && j > 0) {
                     cout << "  (fallback) Замена " << a_char << " -> " << b_char << " -> R\n";
                     ops.push_back('R'); --i; --j;
@@ -145,7 +181,7 @@ int main() {
 
     reverse(ops.begin(), ops.end());
 
-    cout << "\nВосстановленная последовательность (прямой порядок): " << ops << "\n\n";
+    cout << "\nВосстановленная последовательность: " << ops << "\n\n";
 
     return 0;
 }

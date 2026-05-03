@@ -12,28 +12,28 @@ int main() {
     int n = S.size();
     int m = T.size();
     
-    vector<vector<int>> dp(n + 1, vector<int>(m + 1));
+    vector<int> prev(m + 1);
+    vector<int> curr(m + 1);
     
-    for (int i = 0; i <= n; ++i) {
-        dp[i][0] = i;
-    }
     for (int j = 0; j <= m; ++j) {
-        dp[0][j] = j;
+        prev[j] = j;
     }
     
     for (int i = 1; i <= n; ++i) {
+        curr[0] = i;
         for (int j = 1; j <= m; ++j) {
             if (S[i - 1] == T[j - 1]) {
-                dp[i][j] = dp[i - 1][j - 1];
+                curr[j] = prev[j - 1];
             } else {
-                int replace = dp[i - 1][j - 1] + 1;
-                int insert  = dp[i][j - 1] + 1;
-                int del     = dp[i - 1][j] + 1;
-                dp[i][j] = min({replace, insert, del});
+                int replace = prev[j - 1] + 1;
+                int insert  = curr[j - 1] + 1;
+                int del     = prev[j] + 1;
+                curr[j] = min({replace, insert, del});
             }
         }
+        swap(prev, curr);
     }
     
-    cout << dp[n][m] << endl;
+    cout << prev[m] << endl;
     return 0;
 }
